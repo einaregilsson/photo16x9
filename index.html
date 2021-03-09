@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Make Photo 16x9</title>
+        <meta charset="utf8">
+        <style>
+            body {
+                text-align: center;
+                font-family: Arial, sans-serif;
+                background:#fafafa;
+                color:#333;
+            }
+ 
+            canvas {
+                display: block;
+                border:solid 7px white;
+                box-shadow: gray 0 0 5px;
+                background:#ddd;
+                border-radius: 1px;
+                margin:20px auto;
+                max-width: 80%;
+            }
+
+            button {
+                width: 110px;
+            }
+
+            input {
+                font-size:20px;
+                width:60px;
+            }
+            label {
+                font-size:20px;
+            }
+
+        </style>
+    </head>
+    <body onload="setup()">
+
+        <h1>Make photo 16x9</h1>
+        <h4>The easiest way to make your entire photo fit well into a tweet!</h4>
+        <canvas id="c" width="800" height="450"></canvas>
+        <button id="download-image">Download Image</button>
+        <div id="controls">
+            <p>Fill empty space with:</p>
+            <button id="detected-color">Detected color</button> </button><button id="black">Black</button> <button id="white">White</button> <button id="transparent">Transparency</button> <button id="blur">Blur</button>
+        </div>
+        <script>
+
+            //Globals, always apply to current image
+            var canvas, ctx, image;
+            var dx, dy;
+            var isLandscape;
+
+            function downloadImage() {
+                var dataURL = canvas.toDataURL('image/png');
+                
+            }
+
+            function fillBlack() {
+                fillColor('black');
+            }
+
+            function fillWhite() {
+                fillColor('white');
+            }
+
+            function fillTransparent() {
+                canvas.width = canvas.width;
+                drawImage();
+            }
+
+            function rgbToHex(r, g, b) {
+                return ((r << 16) | (g << 8) | b).toString(16);
+            }
+
+            function fillDetectedColor() {
+                var counter = {};
+
+                function addPixel(x, y) {
+                    var pixel = ctx.getImageData(x, y, 1, 1).data;
+                    var hexColor = '#' + rgbToHex(pixel[0], pixel[1], pixel[2]);
+                    console.log('HEXCOLOR IS ' + hexColor);
+                    counter[hexColor] = (counter[hexColor] || 0) + 1;
+                }
+
+                if (isLandscape) {
+                    for (var i=0; i < image.width; i++) {
+                        addPixel(i, dy);
+                        addPixel(i, dy + image.height - 1);
+                    }
+                } else {
+                    for (var i=0; i < image.height; i++) {
+                        addPixel(dx, i);
+                        addPixel(dx + image.width - 1, i);
+                    }
+                }
+
+                var maxColor, maxCount = 0;
+                for (var c in counter) {
+                    if (counter[c] > maxCount) {
+                        maxColor = c;
+                        maxCount = counter[c];
+                    }
+                }
+                fillColor(maxColor);
+            }
+
+            function fillBlur() {
+                ctx.filter = 'blur(7px)';
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                ctx.filter = 'none';
+                drawImage();
+            }
+
+            function fillColor(color) {
+                ctx.fillStyle = color;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                drawImage();
+            }
+            
+            function drawImage() {
+                if (image) {
+                    ctx.drawImage(image, dx, dy, image.width, image.height);
+                }
+            }
+            function setup() {
+                canvas = document.getElementById('c');
+                ctx = canvas.getContext('2d');
+
+                canvas.addEventListener('drop', drop);
+                canvas.addEventListener('dragover', function(ev) {
+                    ev.preventDefault();
+                });
+
+                //Set up fill styles...
+                document.getElementById('black').addEventListener('click', fillBlack);
+                document.getElementById('white').addEventListener('click', fillWhite);
+                document.getElementById('transparent').addEventListener('click', fillTransparent);
+                document.getElementById('blur').addEventListener('click', fillBlur);
+                document.getElementById('detected-color').addEventListener('click', fillDetectedColor);
+
+                document.getElementById('download-image').addEventListener('click', downloadImage);
+            }
+
+            function drop(ev) {
+                ev.stopPropagation();
+                ev.preventDefault();
+
+                var files = ev.dataTransfer.files;
+                if(files && typeof FileReader !== "undefined") {
+                    readFile(files[0]);
+                } else {
+                    alert("Can't read file 🙁");
+                }
+            }
+
+            function fileLoaded(e) {
+                image = new Image();
+                image.src = e.target.result;
+                image.onload = imageLoaded;  
+            }
+
+            function imageLoaded(e) {
+                image = e.target;
+                
+                //Now, see which way it is...
+                var calculatedHeight = Math.round((image.width / 16) * 9);
+                var calculatedWidth = Math.round((image.height / 9) * 16);
+                dx = 0;
+                dy = 0;
+
+                //Need to pad above and below
+                if (calculatedHeight > image.height) {
+                    isLandscape = true;
+                    dy = Math.round((calculatedHeight - image.height) / 2);
+                    canvas.width = image.width;
+                    canvas.height = calculatedHeight;
+                } else {
+                    isLandscape = false;
+                    dx = Math.round((calculatedWidth - image.width) / 2);
+                    canvas.width = calculatedWidth;
+                    canvas.height = image.height;
+                }
+                
+                ctx.drawImage(image, dx, dy, image.width, image.height);
+            }
+
+            function readFile(file) {
+                if (!/image/i.test(file.type)) {
+                    alert('Only image files are supported!');
+                    return;
+                }
+
+                var reader = new FileReader();
+                reader.onload = fileLoaded;
+                reader.readAsDataURL(file);
+            }
+        </script>
+    </body>
+</html>
