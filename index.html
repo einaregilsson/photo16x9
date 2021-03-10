@@ -113,6 +113,43 @@
                 display: none;
             }
 
+            #tp {
+                display: none;
+            }
+
+            @media (max-width: 700px) {
+                h3 {
+                    font-size: 40px;
+                    line-height: 40px;
+                }
+
+                h5 {
+                    font-size: 16px;
+                }
+            }
+
+            @media (max-width: 500px) {
+                h3 {
+                    font-size: 34px;
+                    line-height: 34px;
+                }
+
+                h5 {
+                    font-size: 14px;
+                }
+            }
+
+            @media (max-width: 359px) {
+                h3 {
+                    font-size: 28px;
+                    line-height: 28px;
+                }
+
+                h5 {
+                    font-size: 12px;
+                }
+            }
+
             @media (min-width: 850px) {
                 #canvas-wrapper {
                     max-width: 600px;
@@ -131,7 +168,7 @@
                 <h5>Or click to choose a photo</h5>
             </div>
         </div>
-        
+
         <button id="download-image">Download Image</button>
         <div id="controls">
             <h4>Fill empty space with:</h4>
@@ -152,6 +189,13 @@
             <strong>Cookie policy:</strong> We don't use any cookies or tracking scripts, at all. In fact you can see the entire source code of this page
             by clicking on View Source in your browser, it's all in this one file.
         </p>
+        <div id="tp">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="32" height="32">
+                <rect fill="white" x="0" y="0" height="16" width="16" />
+                <rect fill="white" x="16" y="16" height="16" width="16" />
+            </svg>
+        </div>
+
         <input type="file" id="upload-file"/>
 
         <script>
@@ -199,6 +243,8 @@
                 }
 
                 canvas.width = canvas.width;
+                var base64encoded = btoa(document.getElementById('tp').innerHTML);
+                document.getElementById('c').style.backgroundImage = 'url(data:image/svg+xml;base64,' + base64encoded + ')';
                 drawImage();
             }
 
@@ -245,6 +291,9 @@
                 if (!image) {
                     return noImage();
                 }
+
+                //Don't want checkered background here...
+                document.getElementById('c').style.backgroundImage = '';
 
                 ctx.filter = 'blur(8px)';
                 ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
@@ -336,7 +385,7 @@
                     canvas.height = image.height;
                 }
                 
-                ctx.drawImage(image, dx, dy, image.width, image.height);
+                fillTransparent();
             }
 
             function fileSelectedInDialog(e) {
