@@ -236,7 +236,7 @@
                 canvas.addEventListener('dragover', function(ev) {
                     ev.preventDefault();
                 });
-                canvas.addEventListener('click', clickCanvas);
+                canvas.addEventListener('mousedown', clickCanvas);
 
                 var fileUpload = document.getElementById('upload-file');
                 fileUpload.addEventListener('change', fileSelectedInDialog);
