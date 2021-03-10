@@ -4,10 +4,14 @@
         <title>Make Photo 16x9</title>
         <meta charset="utf8">
         <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <meta name="apple-mobile-web-app-title" content='Make Photo 16x9' />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <link rel="apple-touch-icon" href="icon.png" />
+        
         <style>
             body {
                 text-align: center;
-                font-family: Arial, sans-serif;
+                font-family: 'Helvetica Neue', Arial, sans-serif;
                 background:white;
                 color:#646369 ;
                 padding: 0px;
@@ -35,6 +39,17 @@
                 padding: 30px 0px;
                 color:#06f;
                 border-bottom: solid 1px #ccc;
+            }
+
+            h3 {
+                font-size: 60px;
+                line-height: 60px;
+                margin-top: 20%;
+            }
+
+            h5 {
+                margin-top: -5%;
+                font-size: 20px;
             }
 
             #instructions {
@@ -130,7 +145,7 @@
         </p>
         <p>
             This page was made by <a href="https://twitter.com/einaregilsson">@einaregilsson</a>, give me shout-out on Twitter if you find it useful.
-            You can also read the <a href="">blog post</a> about how it came to be if you're interested in the technical stuff.
+            You can also read the <a href="https://einaregilsson.com/make-photo-16x9/">blog post</a> about how it came to be if you're interested in the technical stuff.
         </p>
 
         <p>
@@ -146,13 +161,26 @@
             var dx, dy;
             var isLandscape;
 
+            function noImage() {
+                alert('Start by uploading an image.');
+            }
+
             function downloadImage() {
+                if (!image) {
+                    return noImage();
+                }
                 var dataURL = canvas.toDataURL('image/png');
 
                 var a = document.createElement('a');
                 a.href = dataURL;
                 a.target = '_blank';
                 var downloadFilename = filename.replace(/\.[a-zA-Z]{3,4}$/, '_16x9.png');
+
+                //If it's an iOS generated guid name, change it to something better...
+
+                if (downloadFilename.match(/[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}/)) {
+                    downloadFilename = 'photo_16x9.png';
+                }
                 a.setAttribute('download', downloadFilename);
                 a.click();
             }
@@ -166,6 +194,10 @@
             }
 
             function fillTransparent() {
+                if (!image) {
+                    return noImage();
+                }
+
                 canvas.width = canvas.width;
                 drawImage();
             }
@@ -175,6 +207,10 @@
             }
 
             function fillDetectedColor() {
+                if (!image) {
+                    return noImage();
+                }
+
                 var counter = {};
 
                 function addPixel(x, y) {
@@ -206,7 +242,11 @@
             }
 
             function fillBlur() {
-                ctx.filter = 'blur(7px)';
+                if (!image) {
+                    return noImage();
+                }
+
+                ctx.filter = 'blur(8px)';
                 ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
                 ctx.filter = 'none';
@@ -218,6 +258,9 @@
             }
 
             function fillColor(color) {
+                if (!image) {
+                    return noImage();
+                }
                 ctx.fillStyle = color;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 drawImage();
