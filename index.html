@@ -254,6 +254,7 @@
             var canvas, ctx, image, filename;
             var dx, dy;
             var isLandscape;
+            var currentType;
 
             function noImage() {
                 alert('Start by uploading an image.');
@@ -280,10 +281,12 @@
             }
 
             function fillBlack() {
+                currentType = 'black';
                 fillColor('black');
             }
 
             function fillWhite() {
+                currentType = 'white';
                 fillColor('white');
             }
 
@@ -291,6 +294,7 @@
                 if (!image) {
                     return noImage();
                 }
+                currentType = 'transparent';
 
                 canvas.width = canvas.width;
                 var base64encoded = btoa(document.getElementById('tp').innerHTML);
@@ -306,6 +310,8 @@
                 if (!image) {
                     return noImage();
                 }
+
+                currentType = 'detected';
 
                 var counter = {};
 
@@ -337,21 +343,34 @@
                 fillColor(maxColor);
             }
 
+            var currentBlur = 8;
+
             function fillBlur() {
                 if (!image) {
                     return noImage();
                 }
 
+                if (currentType === 'blur') {
+                    currentBlur++;
+                    if (currentBlur > 20) {
+                        currentBlur = 8;
+                    }
+                } else {
+                    currentBlur = 8;
+                }
+
+                currentType = 'blur';
+
                 //Don't want checkered background here...
                 document.getElementById('c').style.backgroundImage = '';
-
+                canvas.width = canvas.width;
                 if (typeof ctx.filter !== 'undefined') {
-                    ctx.filter = 'blur(8px)';
+                    ctx.filter = 'blur(' + currentBlur + 'px)';
                     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
                     ctx.filter = 'none';
                 } else { //For Safari...
                     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-                    blur(canvas, 8);
+                    blur(canvas, currentBlur);
                 }
 
                 drawImage();
@@ -414,6 +433,7 @@
                 image = new Image();
                 image.src = e.target.result;
                 image.onload = imageLoaded;  
+                currentBlur = 8;
             }
 
             function imageLoaded(e) {
