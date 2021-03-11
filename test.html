@@ -418,9 +418,6 @@
                 img.style.display = 'block';
                 canvas.style.display = 'none';
                 img.src = canvas.toDataURL();
-                if (navigator.userAgent.match(/iPhone|Android/)) {
-                    document.getElementById('long-click').style.display = 'inline-block';
-                }
             }
 
             function setup() {
@@ -473,6 +470,10 @@
                 
                 document.getElementById('instructions').style.display = 'none';
 
+                if (navigator.userAgent.match(/iPhone|Android/)) {
+                    document.getElementById('long-click').style.display = 'inline-block';
+                }
+ 
                 //Now, see which way it is...
                 var calculatedHeight = Math.round((image.width / 16) * 9);
                 var calculatedWidth = Math.round((image.height / 9) * 16);
