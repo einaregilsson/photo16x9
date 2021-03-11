@@ -160,6 +160,24 @@
                 display: none;
             }
 
+            #canvas-wrapper span {
+                font-size:14px;
+                margin-top: 8px;
+                display: inline-block;
+                display:none;
+            }
+
+            #render {
+                position: relative;
+                display: none;
+                border:solid 7px white;
+                box-shadow: gray 0 0 5px;
+                background:#e3e3e3;
+                border-radius: 1px;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+
             @media (max-width: 700px) {
                 h3 {
                     font-size: 40px;
@@ -212,10 +230,12 @@
 
         <div id="canvas-wrapper">
             <canvas id="c" width="800" height="450"></canvas>
+            <img id="render" />
             <div id="instructions">
                 <h3>Drop photo here</h3>
                 <h5>Or click to choose a photo</h5>
             </div>
+            <span id="long-click">(Long-click on image to save directly to Photos...)</span>
         </div>
 
         <div id="download-wrapper">
@@ -298,7 +318,7 @@
 
                 canvas.width = canvas.width;
                 var base64encoded = btoa(document.getElementById('tp').innerHTML);
-                document.getElementById('c').style.backgroundImage = 'url(data:image/svg+xml;base64,' + base64encoded + ')';
+                document.getElementById('render').style.backgroundImage = 'url(data:image/svg+xml;base64,' + base64encoded + ')';
                 drawImage();
             }
 
@@ -362,7 +382,7 @@
                 currentType = 'blur';
 
                 //Don't want checkered background here...
-                document.getElementById('c').style.backgroundImage = '';
+                document.getElementById('render').style.backgroundImage = '';
                 canvas.width = canvas.width;
                 if (typeof ctx.filter !== 'undefined') {
                     ctx.filter = 'blur(' + currentBlur + 'px)';
@@ -392,17 +412,25 @@
             function drawImage() {
                 if (image) {
                     ctx.drawImage(image, dx, dy, image.width, image.height);
+
                 }
+                var img = document.getElementById('render');
+                img.style.display = 'block';
+                canvas.style.display = 'none';
+                img.src = canvas.toDataURL();
             }
+
             function setup() {
                 canvas = document.getElementById('c');
                 ctx = canvas.getContext('2d');
 
-                canvas.addEventListener('drop', drop);
-                canvas.addEventListener('dragover', function(ev) {
+                var render = document.getElementById('render');
+
+                render.addEventListener('drop', drop);
+                render.addEventListener('dragover', function(ev) {
                     ev.preventDefault();
                 });
-                canvas.addEventListener('mousedown', clickCanvas);
+                render.addEventListener('click', clickCanvas);
 
                 var fileUpload = document.getElementById('upload-file');
                 fileUpload.addEventListener('change', fileSelectedInDialog);
@@ -415,6 +443,7 @@
                 document.getElementById('detected-color').addEventListener('click', fillDetectedColor);
 
                 document.getElementById('download-image').addEventListener('click', downloadImage);
+                drawImage();
             }
 
             function drop(ev) {
@@ -441,6 +470,10 @@
                 
                 document.getElementById('instructions').style.display = 'none';
 
+                if (navigator.userAgent.match(/iPhone|Android/)) {
+                    document.getElementById('long-click').style.display = 'inline-block';
+                }
+ 
                 //Now, see which way it is...
                 var calculatedHeight = Math.round((image.width / 16) * 9);
                 var calculatedWidth = Math.round((image.height / 9) * 16);
