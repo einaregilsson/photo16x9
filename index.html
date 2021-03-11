@@ -1,17 +1,36 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Make Photo 16x9</title>
+        <title>Make Your Photo 16x9</title>
         <meta charset="utf8">
         <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-        <meta name="apple-mobile-web-app-title" content='Make Photo 16x9' />
+        <meta name="apple-mobile-web-app-title" content='Make Your Photo 16x9' />
         <meta name="apple-mobile-web-app-capable" content="yes" />
+
         <link rel="apple-touch-icon" href="icon.png" />
-        
+
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:creator" content="@einaregilsson">
+        <meta name="twitter:title" content="Make your photo's aspect ratio 16x9 for Twitter">
+        <meta name="twitter:description" content="To avoid your short and wide photo being cropped badly on Twitter we pad it so it fits Twitter's 16x9 aspect ratio.">
+        <meta name="twitter:image" content="https://photo16x9.com/share.png">
+
+        <meta property="og:title" content="Make Your Photo 16x9" />
+        <meta property="og:description" content="To avoid your short and wide photo being cropped badly on Twitter we pad it so it fits Twitter's 16x9 aspect ratio." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://photo16x9.com/" />
+        <meta property="og:image" content="https://photo16x9.com/share.png" />
+
+        <script>
+            //Check if we need to hide the Blur button because Safari doesn't support it...
+            if (typeof(document.createElement('canvas').getContext('2d').filter) === 'undefined') {
+                document.documentElement.className = 'no-filter';
+            }
+        </script>
         <style>
             body {
                 text-align: center;
-                font-family: 'Helvetica Neue', Arial, sans-serif;
+                font-family: Arial, sans-serif;
                 background:white;
                 color:#646369 ;
                 padding: 0px;
@@ -35,16 +54,23 @@
             }
             
             h1 {
+                font-size: 30px;
                 margin-top: 0px;
                 padding: 30px 0px;
-                color:#06f;
-                border-bottom: solid 1px #ccc;
+                color:white;
+                background:linear-gradient(#007bff, #04f);
             }
 
             h3 {
                 font-size: 60px;
                 line-height: 60px;
                 margin-top: 20%;
+            }
+
+            h4 {
+                padding: 0px 10px;
+                font-size: 14px;
+                font-weight: normal;
             }
 
             h5 {
@@ -76,16 +102,37 @@
                 width: 110px;
                 height: 30px;
                 border-radius: 5px;
-                background: #06f;
+                background: #007bff;
                 color: white;
-                font-weight: bold;
                 margin: 5px;
+                border: solid 0px darkblue;
+                border-bottom-width: 2px;
+                font-size: 14px;
+            }
+
+            button:hover {
+                background: #05f;
+            }
+
+            button:focus {outline:0;}
+
+            button:active {
+                height: 29px;
+                border-bottom-width: 1px;
+                outline: none;
+                position: relative;
+                top: 1px;
+            }
+
+            #download-wrapper {
+                height: 30px;
             }
 
             #download-image {
                 display: block;
                 margin: 20px auto;
                 width: 160px;
+                font-weight: bold;
             }
 
             input {
@@ -94,6 +141,10 @@
             }
             label {
                 font-size:20px;
+            }
+
+            .no-filter #blur {
+                display: none;
             }
 
             p {
@@ -129,6 +180,11 @@
             }
 
             @media (max-width: 500px) {
+                h1 {
+                    padding: 10px 0;
+                    font-size: 24px;
+                }
+
                 h3 {
                     font-size: 34px;
                     line-height: 34px;
@@ -159,8 +215,9 @@
         </style>
     </head>
     <body onload="setup()">
-        <h1>Make photo 16x9</h1>
+        <h1>Make your photo 16x9</h1>
         <h4>The easiest way to make your entire photo fit well into a tweet!</h4>
+        <div id="temp" style="width:460px; height:460px; border:solid 1px red">
         <div id="canvas-wrapper">
             <canvas id="c" width="800" height="450"></canvas>
             <div id="instructions">
@@ -169,7 +226,10 @@
             </div>
         </div>
 
-        <button id="download-image">Download Image</button>
+    </div>
+        <div id="download-wrapper">
+            <button id="download-image">Download Image</button>
+        </div>
         <div id="controls">
             <h4>Fill empty space with:</h4>
             <button id="detected-color">Detected color</button> </button><button id="black">Black</button> <button id="white">White</button> <button id="transparent">Transparency</button> <button id="blur">Blur</button>
@@ -181,7 +241,7 @@
             so people can read your image text immediately.  
         </p>
         <p>
-            This page was made by <a href="https://twitter.com/einaregilsson">@einaregilsson</a>, give me shout-out on Twitter if you find it useful.
+            This page was made by <a href="https://twitter.com/einaregilsson">@einaregilsson</a>, give me a shout-out on Twitter if you find it useful.
             You can also read the <a href="https://einaregilsson.com/make-photo-16x9/">blog post</a> about how it came to be if you're interested in the technical stuff.
         </p>
 
