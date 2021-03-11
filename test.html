@@ -85,7 +85,7 @@
 
             canvas {
                 position: relative;
-                display: block;
+                display: none;
                 border:solid 7px white;
                 box-shadow: gray 0 0 5px;
                 background:#e3e3e3;
@@ -161,10 +161,14 @@
             }
 
             #render {
-                display: none;
-                position: absolute;
-                left: 7px;
-                top: 7px;
+                position: relative;
+                display: block;
+                border:solid 7px white;
+                box-shadow: gray 0 0 5px;
+                background:#e3e3e3;
+                border-radius: 1px;
+                max-width: 100%;
+                box-sizing: border-box;
             }
 
             @media (max-width: 700px) {
@@ -400,21 +404,23 @@
             function drawImage() {
                 if (image) {
                     ctx.drawImage(image, dx, dy, image.width, image.height);
-                    var img = document.getElementById('render');
-                    img.style.display = 'block';
-                    img.src = canvas.toDataURL();
 
                 }
+                var img = document.getElementById('render');
+                img.src = canvas.toDataURL();
             }
+
             function setup() {
                 canvas = document.getElementById('c');
                 ctx = canvas.getContext('2d');
 
-                canvas.addEventListener('drop', drop);
-                canvas.addEventListener('dragover', function(ev) {
+                var render = document.getElementById('render');
+
+                render.addEventListener('drop', drop);
+                render.addEventListener('dragover', function(ev) {
                     ev.preventDefault();
                 });
-                canvas.addEventListener('mousedown', clickCanvas);
+                render.addEventListener('click', clickCanvas);
 
                 var fileUpload = document.getElementById('upload-file');
                 fileUpload.addEventListener('change', fileSelectedInDialog);
@@ -427,6 +433,7 @@
                 document.getElementById('detected-color').addEventListener('click', fillDetectedColor);
 
                 document.getElementById('download-image').addEventListener('click', downloadImage);
+                drawImage();
             }
 
             function drop(ev) {
