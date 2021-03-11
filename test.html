@@ -85,7 +85,7 @@
 
             canvas {
                 position: relative;
-                display: none;
+                display: block;
                 border:solid 7px white;
                 box-shadow: gray 0 0 5px;
                 background:#e3e3e3;
@@ -160,9 +160,16 @@
                 display: none;
             }
 
+            #canvas-wrapper span {
+                font-size:14px;
+                margin-top: 8px;
+                display: inline-block;
+                display:none;
+            }
+
             #render {
                 position: relative;
-                display: block;
+                display: none;
                 border:solid 7px white;
                 box-shadow: gray 0 0 5px;
                 background:#e3e3e3;
@@ -228,6 +235,7 @@
                 <h3>Drop photo here</h3>
                 <h5>Or click to choose a photo</h5>
             </div>
+            <span id="long-click">(Long-click on image to save directly to Photos...)</span>
         </div>
 
         <div id="download-wrapper">
@@ -310,7 +318,7 @@
 
                 canvas.width = canvas.width;
                 var base64encoded = btoa(document.getElementById('tp').innerHTML);
-                document.getElementById('c').style.backgroundImage = 'url(data:image/svg+xml;base64,' + base64encoded + ')';
+                document.getElementById('render').style.backgroundImage = 'url(data:image/svg+xml;base64,' + base64encoded + ')';
                 drawImage();
             }
 
@@ -374,7 +382,7 @@
                 currentType = 'blur';
 
                 //Don't want checkered background here...
-                document.getElementById('c').style.backgroundImage = '';
+                document.getElementById('render').style.backgroundImage = '';
                 canvas.width = canvas.width;
                 if (typeof ctx.filter !== 'undefined') {
                     ctx.filter = 'blur(' + currentBlur + 'px)';
@@ -407,7 +415,12 @@
 
                 }
                 var img = document.getElementById('render');
+                img.style.display = 'block';
+                canvas.style.display = 'none';
                 img.src = canvas.toDataURL();
+                if (navigator.userAgent.match(/iPhone|Android/)) {
+                    document.getElementById('long-click').style.display = 'inline-block';
+                }
             }
 
             function setup() {
