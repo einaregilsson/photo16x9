@@ -452,7 +452,14 @@
             function paste(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                readFile(e.clipboardData.items[0].getAsFile());
+
+                var item;
+                for (var i=0; i < e.clipboardData.items.length; i++) {
+                    item = e.clipboardData.items[i];
+                    if (item.kind === 'file' && item.type.match(/^image\//)) {
+                        readFile(item.getAsFile());
+                    }
+                }
             }
 
             function drop(ev) {
