@@ -444,7 +444,15 @@
                 document.getElementById('detected-color').addEventListener('click', fillDetectedColor);
 
                 document.getElementById('download-image').addEventListener('click', downloadImage);
+
+                window.addEventListener('paste', paste);
                 drawImage();
+            }
+            
+            function paste(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                readFile(e.clipboardData.items[0].getAsFile());
             }
 
             function drop(ev) {
